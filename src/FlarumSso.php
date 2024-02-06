@@ -4,11 +4,14 @@ namespace burnthebook\craftflarumsso;
 
 use Craft;
 use yii\base\Event;
+use Psr\Log\LogLevel;
 use craft\base\Model;
 use craft\base\Plugin;
 use craft\elements\User;
+use craft\log\MonologTarget;
 use craft\events\ModelEvent;
 use craft\helpers\UrlHelper;
+use Monolog\Formatter\LineFormatter;
 use craft\events\FindLoginUserEvent;
 use craft\controllers\UsersController;
 use burnthebook\craftflarumsso\models\Settings;
@@ -40,6 +43,19 @@ class FlarumSso extends Plugin
     public function init(): void
     {
         parent::init();
+
+        // Register a custom log target, keeping the format as simple as possible.
+        Craft::getLogger()->dispatcher->targets[] = new MonologTarget([
+            'name' => 'flarum-sso',
+            'categories' => ['flarum-sso'],
+            'level' => LogLevel::INFO,
+            'logContext' => false,
+            'allowLineBreaks' => false,
+            'formatter' => new LineFormatter(
+                format: "%datetime% %message%\n",
+                dateFormat: 'Y-m-d H:i:s',
+            ),
+        ]);
 
         // Defer most setup tasks until Craft is fully initialized
         Craft::$app->onInit(function() {

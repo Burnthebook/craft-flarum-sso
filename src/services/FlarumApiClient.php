@@ -2,7 +2,8 @@
 
 namespace burnthebook\craftflarumsso\services;
 
-
+use Craft;
+use yii\log\Logger;
 use Josantonius\Cookie\Cookie;
 use GuzzleHttp\Client as HttpClient;
 
@@ -21,17 +22,13 @@ class FlarumApiClient
      * your Flarum and SSO are on the same root domain.
      *
      * sso.domain.com and flarum.domain.com will have a config of:
-     * @example url://  ['cookie_options' => ['domain' => 'domain.com']]
+     * @example url://dev/null  ['cookie_options' => ['domain' => 'domain.com']]
      */
     public function __construct(
         public string $endpoint, 
         public string $apiKey, 
         public array $cookieOptions
-    ) {
-        $this->endpoint = $endpoint;
-        $this->apiKey = $apiKey;
-        $this->cookieOptions = $cookieOptions;
-    }
+    ) {}
 
     /**
      * Make a request to the Flarum API
@@ -90,6 +87,9 @@ class FlarumApiClient
 
             // Get the response body as a stdClass
             $body = json_decode($response->getBody());
+
+            // Log the error
+            Craft::getLogger()->log("Error in request. \r\n URL: " . $url . " \r\nException: " . $response->getBody(), Logger::LEVEL_INFO, 'flarum-sso');
 
             // return standardised data format
             return ['error' => true, 'data' => $response->getReasonPhrase(), 'errors' => $body->errors];
