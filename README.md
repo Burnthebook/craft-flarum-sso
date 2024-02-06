@@ -41,7 +41,9 @@ composer require burnthebook/craft-flarum-sso
 
 A: Ensure your root domain matches, due to cookies it is best to have the Flarum forum on a subdomain and the CraftCMS either on another subdomain or a root domain. 
 
-_**For Example:** If your CraftCMS installation is on craftcms.com, you'd want to have your Flarum installation on discuss.craftcms.com_
+Additionally, ensure your cookie domain is set up within the Plugin Settings as detailed within the Configuration section. 
+
+_**For Example:** If your CraftCMS installation is on craftcms.com, you'd want to have your Flarum installation on discuss.craftcms.com and your cookie domain set up as "craftcms.com" in Plugin Settings_
 
 **Q: I am recieving "Authentication failed: Unauthorized" upon logging in or creating accounts in CraftCMS even though I know the username and password are correct**
 
