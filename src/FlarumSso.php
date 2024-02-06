@@ -6,8 +6,8 @@ use Craft;
 use yii\base\Event;
 use craft\base\Model;
 use craft\base\Plugin;
-use craft\web\Request;
-use Maicol07\SSO\Flarum;
+use craft\elements\User;
+use craft\events\ModelEvent;
 use craft\helpers\UrlHelper;
 use craft\events\FindLoginUserEvent;
 use craft\controllers\UsersController;
@@ -43,7 +43,9 @@ class FlarumSso extends Plugin
 
         // Defer most setup tasks until Craft is fully initialized
         Craft::$app->onInit(function() {
-            $this->attachEventHandlers();
+            if (!Craft::$app->request->isConsoleRequest) {
+                $this->attachEventHandlers();
+            }
             // ...
         });
     }
@@ -96,7 +98,7 @@ class FlarumSso extends Plugin
         Event::on(
             UsersController::class,
             UsersController::EVENT_AFTER_FIND_LOGIN_USER,
-            function (FindLoginUserEvent $event) use($options, $client, $redirect) {
+            function (FindLoginUserEvent $event) use($client, $redirect) {
                 // Check we actually authenticated with Craft
                 if ($event->user) {
                     $craftUser = [
@@ -108,9 +110,37 @@ class FlarumSso extends Plugin
                     // Check if user exists on Flarum
                     if ($client->checkUserExists(username: $craftUser['username'])) {
                         $this->login(client: $client, user: $craftUser);
-                        Craft::$app->getResponse()->redirect(UrlHelper::url($redirect))->send();
                     } else {
+                        // otherwise sign them up
                         $this->signup(client: $client, user: $craftUser);
+                    }
+                    
+                    // redirect if set  
+                    if ($redirect) {
+                        Craft::$app->getResponse()->redirect(UrlHelper::url($redirect))->send();
+                    }
+                }
+            }
+        );
+
+        /**
+         * On signup, signup user to flarum too
+         */
+        Event::on(
+            User::class,
+            User::EVENT_BEFORE_SAVE,
+            function (ModelEvent $event) use($client, $redirect) {
+                if ($event->sender->firstSave) {
+                    $craftUser = [
+                        'username' => $event->sender->username,
+                        'email' => $event->sender->email,
+                        'password' => $event->sender->newPassword, // @todo is this reliable?
+                    ];
+                    
+                    $this->signup(client: $client, user: $craftUser);
+
+                    // redirect if set  
+                    if ($redirect) {
                         Craft::$app->getResponse()->redirect(UrlHelper::url($redirect))->send();
                     }
                 }
