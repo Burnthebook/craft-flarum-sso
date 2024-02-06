@@ -6,6 +6,8 @@ Adds Single Sign On (SSO) for Craft 4 as master with Flarum as slave
 
 This plugin requires Craft CMS 4.5.0 or later, and PHP 8.0.2 or later.
 
+This plugin also requires the [Flarum SSO Extension](https://github.com/maicol07/flarum-ext-sso) installing and configuring on your Flarum installation.
+
 ## Installation
 
 You can install this plugin from the Plugin Store or with Composer.
