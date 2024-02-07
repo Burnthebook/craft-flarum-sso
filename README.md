@@ -33,6 +33,21 @@ composer require burnthebook/craft-flarum-sso
 
 ## Configuration
 
+To configure the plugin, head on over to Settings > Plugins (Section at bottom of page) > Flarum SSO for Craft 4 and click the icon.
+
+There are three required settings:
+
+**Flarum URL**
+_The URL to your Flarum installation. This is recommended to be a subdomain of your CraftCMS installation, e.g. https://discuss.craftcms.com_
+
+**Flarum API Key**
+_The API key you manually inserted into your Flarum installations api_keys database table_
+
+
+**Forum SSO Cookie - Domain**
+_The root domain for the SSO Cookie. If your CraftCMS installation is on www.craftcms.com, and your Flarum installation is on discuss.craftcms.com, you would set this to 'craftcms.com'_
+
+The rest of the settings on the Settings page are optional and pre-configured to work correctly with the `maicol07/flarum-ext-sso` package that you will be installing on your Flarum installation, and so can be left as-is unless you need to configure the cookie settings for security purposes.
 
 
 ## Troubleshooting
