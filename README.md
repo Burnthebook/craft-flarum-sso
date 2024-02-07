@@ -1,6 +1,6 @@
 # Flarum SSO for Craft 4
 
-Adds Single Sign On (SSO) for Craft 4 as master with Flarum as slave
+Adds Single Sign On (SSO) for Craft 4 as a parent with Flarum as child
 
 ## Requirements
 
