@@ -190,4 +190,20 @@ class FlarumApiClient
 
         return $cookie;
     }
+
+    /**
+     * Removes a cookie
+     * 
+     * @param   string $name The name of the cookie
+     */
+    public function deleteCookie($name) : Cookie
+    {
+        $cookie = new Cookie();
+        
+        $prefix = array_key_exists('prefix', $this->cookieOptions) ? $this->cookieOptions['prefix'] : 'flarum_';
+
+        $cookie->remove($prefix . $name);
+
+        return $cookie;
+    }
 }

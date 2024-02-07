@@ -4,15 +4,17 @@ namespace burnthebook\craftflarumsso;
 
 use Craft;
 use yii\base\Event;
-use Psr\Log\LogLevel;
 use craft\base\Model;
+use Psr\Log\LogLevel;
 use craft\base\Plugin;
+use yii\web\UserEvent;
 use craft\elements\User;
-use craft\log\MonologTarget;
 use craft\events\ModelEvent;
 use craft\helpers\UrlHelper;
-use Monolog\Formatter\LineFormatter;
+use craft\log\MonologTarget;
+use craft\web\User as WebUser;
 use craft\events\FindLoginUserEvent;
+use Monolog\Formatter\LineFormatter;
 use craft\controllers\UsersController;
 use burnthebook\craftflarumsso\models\Settings;
 use burnthebook\craftflarumsso\services\FlarumApiClient;
@@ -86,15 +88,15 @@ class FlarumSso extends Plugin
 
         // API Client Options
         $options = [
-            'endpoint' => 'http://flarum.musicinmind-craft.test',
-            'api_key' => '4jSxH2e1Ecz*WF@z2JuJHB61F0UQb=TOgQrGs^%b',
+            'endpoint' => $this->settings->flarumApiUrl,
+            'api_key' => $this->settings->flarumApiKey,
             'cookie_options' => [
-                'domain' => 'musicinmind-craft.test',
-                'prefix' => 'flarum_', // optional
-                'http_only' => true, // optional
-                'path' => '/', // optional
-                'same_site' => 'lax', // optional
-                'secure_only' => false, // optional
+                'domain' => $this->settings->flarumCookieDomain,
+                'prefix' => $this->settings->flarumCookiePrefix ?? 'flarum_', // optional
+                'http_only' => $this->settings->flarumCookieHttpOnly ?? true, // optional
+                'path' => $this->settings->flarumCookiePath ?? '/', // optional
+                'same_site' => $this->settings->flarumCookieSameSite ?? 'lax', // optional
+                'secure_only' => $this->settings->flarumCookieSecureOnly ?? false, // optional
             ]
         ];
 
@@ -162,6 +164,23 @@ class FlarumSso extends Plugin
                 }
             }
         );
+
+        /**
+         * On logout, log the user out of Flarum by deleting session cookies
+         */
+        Event::on(
+            \craft\web\User::class,
+            WebUser::EVENT_AFTER_LOGOUT,
+            function(UserEvent $event) use($client, $redirect) {
+                // Log the user out
+                $this->logout(client: $client);
+
+                // redirect if set  
+                if ($redirect) {
+                    Craft::$app->getResponse()->redirect(UrlHelper::url($redirect))->send();
+                }
+            }
+        );
     }
 
     /**
@@ -197,6 +216,19 @@ class FlarumSso extends Plugin
             payload: $token['data']->token, 
             longLived: true
         );
+    }
+
+    /**
+     * Log the user out
+     * 
+     * @param   \burnthebook\craftflarumsso\services\FlarumApiClient $client An instance of the Flarum API Client
+     * 
+     * @return  void
+     */
+    protected function logout(FlarumApiClient $client) : void
+    {
+        $client->deleteCookie('token');
+        $client->deleteCookie('remember');
     }
 
     /**

@@ -3,4 +3,85 @@
 
 {% import '_includes/forms.twig' as forms %}
 
-{# ... #}
+{{ 
+    forms.textField({
+        first: true,
+        label: 'Flarum URL (with http(s)://)',
+        instructions: "Required - the URL to your Flarum installation. This is recommended to be a subdomain of your CraftCMS installation, e.g. https://discuss.craftcms.com",
+        id: 'flarumApiUrl',
+        name: 'flarumApiUrl',
+        required: true,
+        value: settings.flarumApiUrl
+    }) 
+}}
+{{ 
+    forms.textField({
+        label: 'Flarum API Key',
+        instructions: "Required - the API key you manually inserted into your Flarum installations api_keys database table.",
+        id: 'flarumApiKey',
+        name: 'flarumApiKey',
+        required: true,
+        value: settings.flarumApiKey
+    }) 
+}}
+{{ 
+    forms.textField({
+        label: 'Flarum SSO Cookie - Domain',
+        instructions: "Required - the root domain for the SSO Cookie. If your CraftCMS installation is on www.craftcms.com, and your Flarum installation is on discuss.craftcms.com, you would set this to 'craftcms.com'",
+        id: 'flarumCookieDomain',
+        name: 'flarumCookieDomain',
+        required: true,
+        value: settings.flarumCookieDomain
+    }) 
+}}
+{{
+    forms.lightswitchField({
+        label: 'Flarum SSO Cookie - HTTP Only?',
+        instructions: "Optional, leave as default if unsure. <a href='https://owasp.org/www-community/HttpOnly'>More info</a>",
+        id: 'flarumCookieHttpOnly',
+        name: 'flarumCookieHttpOnly',
+        on: settings.flarumCookieHttpOnly
+    }) 
+}}
+{{
+    forms.lightswitchField({
+        label: 'Flarum SSO Cookie - Secure Only?',
+        instructions: "Optional, leave as default if unsure. <a href='https://owasp.org/www-community/controls/SecureCookieAttribute#:~:text=The%20purpose%20of%20the%20secure,going%20to%20an%20HTTPS%20page.'>More info</a>",
+        id: 'flarumCookieSecureOnly',
+        name: 'flarumCookieSecureOnly',
+        on: settings.flarumCookieSecureOnly
+    }) 
+}}
+{{ 
+    forms.textField({
+        label: 'Flarum SSO Cookie - Prefix',
+        instructions: "Optional, leave as default if unsure.",
+        id: 'flarumCookiePrefix',
+        name: 'flarumCookiePrefix',
+        value: settings.flarumCookiePrefix
+    }) 
+}}
+{{ 
+    forms.textField({
+        label: 'Flarum SSO Cookie - Path',
+        instructions: "Optional, leave as default if unsure.",
+        id: 'flarumCookiePath',
+        name: 'flarumCookiePath',
+        value: settings.flarumCookiePath
+    }) 
+}}
+{{
+    forms.selectField({
+        label: 'Flarum SSO Cookie - Same Site',
+        instructions: "Optional, leave as default if unsure. <a href='https://web.dev/articles/samesite-cookies-explained'>More info</a>",
+        id: 'flarumCookieSameSite',
+        name: 'flarumCookieSameSite',
+        options: [
+            {label: 'Please select', value: ''},
+            {label: 'Strict', value: 'strict'},
+            {label: 'Lax', value: 'lax'},
+            {label: 'None', value: 'none'},
+        ],
+        value: settings.flarumCookieSameSite,
+    }) 
+}}
