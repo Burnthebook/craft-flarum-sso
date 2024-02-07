@@ -148,7 +148,7 @@ class FlarumApiClient
      * 
      * @return  array ['error' => bool, 'data' => ?array|string, 'errors' => ?array]
      */
-    public function createAccount($userDetails)
+    public function createAccount(array $userDetails)
     {
         return $this->request('post', '/api/users', [
             'form_params' => [
@@ -172,7 +172,7 @@ class FlarumApiClient
      * 
      * @return \Josantonius\Cookie\Cookie
      */
-    public function setCookie($name, $payload, $longLived = false) : Cookie
+    public function setCookie(string $name, string $payload, bool $longLived = false) : Cookie
     {
         $cookie = new Cookie(
             domain: $this->cookieOptions['domain'],
@@ -196,12 +196,21 @@ class FlarumApiClient
      * 
      * @param   string $name The name of the cookie
      */
-    public function deleteCookie($name) : Cookie
+    public function deleteCookie(string $name) : Cookie
     {
-        $cookie = new Cookie();
+        $cookie = new Cookie(
+            domain: $this->cookieOptions['domain'],
+            expires: 'now +1 minute',
+            httpOnly: array_key_exists('http_only', $this->cookieOptions) ? $this->cookieOptions['http_only'] : true,
+            path: array_key_exists('path', $this->cookieOptions) ? $this->cookieOptions['path'] : '/',
+            raw: true,
+            sameSite: array_key_exists('same_site', $this->cookieOptions) ? $this->cookieOptions['same_site'] : 'strict',
+            secure: array_key_exists('secure_only', $this->cookieOptions) ? $this->cookieOptions['secure_only'] : true,
+        );
         
         $prefix = array_key_exists('prefix', $this->cookieOptions) ? $this->cookieOptions['prefix'] : 'flarum_';
-
+        
+        $cookie->pull($prefix . $name);
         $cookie->remove($prefix . $name);
 
         return $cookie;
