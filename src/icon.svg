@@ -1,21 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 300">
+<svg id="gr_icon05_instantAnalytics" xmlns="http://www.w3.org/2000/svg" width="250" height="250" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 250 250">
   <defs>
-    <linearGradient id="b" x1="50%" x2="50%" y1="0%" y2="100%">
-      <stop offset="0%" stop-color="#EA3636"/>
-      <stop offset="100%" stop-color="#F37440"/>
+    <style>
+      .cls-1 {
+        fill: url(#linear-gradient);
+      }
+
+      .cls-1, .cls-2, .cls-3 {
+        stroke-width: 0px;
+      }
+
+      .cls-4 {
+        fill: none;
+        stroke: #fff;
+        stroke-miterlimit: 10;
+      }
+
+      .cls-2 {
+        fill: #dcdcdc;
+      }
+
+      .cls-3 {
+        fill: #fff;
+      }
+    </style>
+    <linearGradient id="linear-gradient" x1="125" y1="249.99975" x2="125" y2="-.00025" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f37440"/>
+      <stop offset="1" stop-color="#eb3c37"/>
     </linearGradient>
-    <pattern id="d" width="512" height="512" x="-512" y="-512" patternUnits="userSpaceOnUse">
-      <use href="#a"/>
-    </pattern>
-    <path id="c" d="M0 0h300v300H0z"/>
   </defs>
-  <g fill="none" fill-rule="evenodd">
-    <use href="#c" fill="url(#b)"/>
-    <use href="#c" fill="url(#d)" fill-opacity=".03"/>
-    <g>
-      <path fill="#DCDCDC" d="M160.24 178v55.15L91.8 188.38l-2.75-1.8-5.97-3.9a8.84 8.84 0 0 1-2.6-2.65l79.76-2.03Z"/>
-      <path fill="#FFF" d="M82.38 66.09A3.38 3.38 0 0 0 79 69.47v105.65c0 1.73.5 3.43 1.44 4.88a8.84 8.84 0 0 0 2.6 2.65l5.97 3.9 2.75 1.8s-11.35-8.37 2.46-8.37h126.95V66.1H82.38Z"/>
-    </g>
+  <rect class="cls-1" y="-.00025" width="250" height="250"/>
+  <g>
+    <polygon class="cls-2" points="29.48525 136.35547 28.36915 137.10932 28.9145 140.02239 60.45611 160.5075 60.45611 137.8619 59.13159 136.35547 29.48525 136.35547"/>
+    <path class="cls-3" d="M86.18041,89.492v48.3699h-54.11682s-4.65227-.13683-1.50515,3.14712c0,0-4.72068-2.32613-4.72068-5.13118v-44.70931c0-.92592.75061-1.67653,1.67653-1.67653h58.66611Z"/>
+  </g>
+  <path class="cls-3" d="M220.82571,94.68212h-47.86994c-3.54592,0-6.38266,2.83674-6.38266,6.38266v47.86994c0,3.54592,2.83674,6.38266,6.38266,6.38266h47.86994c3.475,0,6.38266-2.83674,6.38266-6.38266v-47.86994c0-3.54592-2.83674-6.38266-6.38266-6.38266ZM196.78436,131.63062c1.98572,0,4.11327-.7801,6.1699-2.62398l2.83674,3.26225c-2.97857,2.41123-6.38266,3.75868-9.78674,3.75868-6.73725,0-10.99236-4.46786-9.9995-10.7796s6.73725-10.7796,13.4745-10.7796c3.26225,0,6.31174,1.27653,8.43929,3.61684l-3.97143,3.26225c-1.13469-1.48929-3.04949-2.48215-5.17705-2.48215-4.04235,0-7.16276,2.62398-7.80103,6.38266-.56735,3.75868,1.70204,6.38266,5.81531,6.38266Z"/>
+  <g>
+    <line class="cls-4" x1="141.34776" y1="108.65199" x2="108.65224" y2="141.34751"/>
+    <line class="cls-4" x1="141.34776" y1="141.34751" x2="108.65224" y2="108.65199"/>
   </g>
 </svg>
