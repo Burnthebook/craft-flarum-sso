@@ -4,6 +4,7 @@ namespace burnthebook\craftflarumsso;
 
 use Craft;
 use yii\base\Event;
+use yii\log\Logger;
 use craft\base\Model;
 use Psr\Log\LogLevel;
 use craft\base\Plugin;
@@ -148,6 +149,11 @@ class FlarumSso extends Plugin
             User::class,
             User::EVENT_BEFORE_SAVE,
             function (ModelEvent $event) use($client, $redirect) {
+                if (!$event->sender->newPassword) {
+                    Craft::getLogger()->log("No password provided, user not created in Flarum.". " \r\nException: " . $event->sender, Logger::LEVEL_INFO, 'flarum-sso');
+                    return;
+                }
+                
                 if ($event->sender->firstSave) {
                     $craftUser = [
                         'username' => $event->sender->username,
