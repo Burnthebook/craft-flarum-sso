@@ -48,33 +48,23 @@ class FlarumApiClient
         try {
             // Set Default headers with UA and Accept
             $headers = [
-                'headers' => [
-                    'User-Agent' => 'php-flarum-api-client/1.0',
-                    'Accept' => 'application/vnd.api+json, application/json',
-                ]
+                'User-Agent' => 'php-flarum-api-client/1.0',
+                'Accept' => 'application/vnd.api+json, application/json',
             ];
 
             // Get authorization header
             if (empty($options['authorization'])) {
-                $headers['headers']['Authorization'] = 'Token ' . $this->apiKey;
+                $headers['Authorization'] = 'Token ' . $this->apiKey;
             } else {
-                $headers['headers']['Authorization'] = $options['authorization'];
+                $headers['Authorization'] = $options['authorization'];
             }
 
-            // Set a placeholder variable for form params
-            $formParams = [];
-
-            // Get the form params if they exist
-            if (array_key_exists('form_params', $options)) {
-                $formParams = ['form_params' => $options['form_params']];
-            }
-
-            // Merge our headers and form params
-            $params = array_merge($formParams, $headers);
+            // Merge the headers into options
+            $options['headers'] = $headers;
 
             // Make the request to the API
-            $response = $client->{$method}($endpoint . $url, $params);
-            
+            $response = $client->request($method, $endpoint . $url, $options);
+
             // Get the response body as a stdClass
             $body = json_decode($response->getBody());
 
@@ -108,7 +98,7 @@ class FlarumApiClient
      */
     public function getToken(string $username, string $password) : array 
     {
-        return $this->request('post', '/api/token', [
+        return $this->request('POST', '/api/token', [
             'form_params' => [
                 'identification' => $username,
                 'password' => $password,
@@ -138,7 +128,7 @@ class FlarumApiClient
      */
     public function getUserByName(string $username) : array
     {
-        return $this->request('get', '/api/users/'. $username . '?bySlug=1', []);
+        return $this->request('GET', '/api/users/'. $username . '?bySlug=1', []);
     }
 
     /**
@@ -150,13 +140,38 @@ class FlarumApiClient
      */
     public function createAccount(array $userDetails)
     {
-        return $this->request('post', '/api/users', [
+        return $this->request('POST', '/api/users', [
             'form_params' => [
                 'data' => [
                     'attributes' => [
                         'username' => $userDetails['username'],
                         'email' => $userDetails['email'],
                         'password' => $userDetails['password'],
+                    ]
+                ]
+            ]
+        ]);
+    }
+
+    /**
+     * Change an account password in Flarum
+     * 
+     * @param   array $user ['username' => string, 'email' => string, 'password' => string]
+     * 
+     * @return  array ['error' => bool, 'data' => ?array|string, 'errors' => ?array]
+     */
+    public function changePassword(array $user)
+    {
+        $flarumUser = $this->getUserByName($user['username']);
+        $flarumUserId = (int) $flarumUser['data']->data->id;
+
+        return $this->request('PATCH', '/api/users/' . $flarumUserId, [
+            'json' => [
+                'data' => [
+                    'attributes' => [
+                        'username' => $user['username'],
+                        'email' => $user['email'],
+                        'password' => $user['password'],
                     ]
                 ]
             ]
