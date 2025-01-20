@@ -191,7 +191,7 @@ class FlarumApiClient
     {
         $cookie = new Cookie(
             domain: $this->cookieOptions['domain'],
-            expires: $longLived ? 'now +1 year' : 'now +1 hour',
+            expires: $longLived ? 'now +1 year' : 'now +24 hours',
             httpOnly: array_key_exists('http_only', $this->cookieOptions) ? $this->cookieOptions['http_only'] : true,
             path: array_key_exists('path', $this->cookieOptions) ? $this->cookieOptions['path'] : '/',
             raw: true,

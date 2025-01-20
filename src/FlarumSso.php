@@ -242,7 +242,8 @@ class FlarumSso extends Plugin
             // Set session cookie
             $client->setCookie(
                 name: 'token', 
-                payload: $token['data']->token
+                payload: $token['data']->token,
+                longLived: true
             );
     
             // Set remember cookie
