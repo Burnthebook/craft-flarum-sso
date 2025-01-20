@@ -1,5 +1,9 @@
 # Release Notes for Flarum SSO for Craft 4
 
+# 1.0.4
+- Updates login function to set token cookie as long lived (one year expiry)
+- Updates setCookie function in api client to default to 24h when not long lived (increased from 1h)
+
 # 1.0.3
 - CraftCMS 5.x Support
 
