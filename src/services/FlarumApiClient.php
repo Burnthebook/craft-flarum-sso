@@ -102,6 +102,7 @@ class FlarumApiClient
             'form_params' => [
                 'identification' => $username,
                 'password' => $password,
+                'remember' => 1
             ]
         ]);
     }
