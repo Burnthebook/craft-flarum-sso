@@ -61,7 +61,7 @@ class FlarumSso extends Plugin
         ]);
 
         // Defer most setup tasks until Craft is fully initialized
-        Craft::$app->onInit(function() {
+        Craft::$app->onInit(function () {
             if (!Craft::$app->request->isConsoleRequest) {
                 $this->attachEventHandlers();
             }
@@ -103,8 +103,8 @@ class FlarumSso extends Plugin
 
         // Init client
         $client = new FlarumApiClient(
-            endpoint: $options['endpoint'], 
-            apiKey: $options['api_key'], 
+            endpoint: $options['endpoint'],
+            apiKey: $options['api_key'],
             cookieOptions: $options['cookie_options']
         );
 
@@ -117,7 +117,7 @@ class FlarumSso extends Plugin
         Event::on(
             UsersController::class,
             UsersController::EVENT_AFTER_FIND_LOGIN_USER,
-            function (FindLoginUserEvent $event) use($client, $redirect) {
+            function (FindLoginUserEvent $event) use ($client, $redirect) {
                 // Check we actually authenticated with Craft
                 if ($event->user) {
                     $craftUser = [
@@ -133,8 +133,8 @@ class FlarumSso extends Plugin
                         // otherwise sign them up
                         $this->signup(client: $client, user: $craftUser);
                     }
-                    
-                    // redirect if set  
+
+                    // redirect if set
                     if ($redirect) {
                         Craft::$app->getResponse()->redirect(UrlHelper::url($redirect))->send();
                     }
@@ -148,23 +148,23 @@ class FlarumSso extends Plugin
         Event::on(
             User::class,
             User::EVENT_BEFORE_SAVE,
-            function (ModelEvent $event) use($client, $redirect) {
+            function (ModelEvent $event) use ($client, $redirect) {
                 if (!$event->sender->newPassword) {
-                    Craft::getLogger()->log("No password provided, user not created in Flarum.". " \r\nException: " . $event->sender, Logger::LEVEL_INFO, 'flarum-sso');
+                    Craft::getLogger()->log("No password provided, user not created in Flarum." . " \r\nException: " . $event->sender, Logger::LEVEL_INFO, 'flarum-sso');
                     return;
                 }
 
-                
+
                 if ($event->sender->firstSave) {
                     $craftUser = [
                         'username' => $event->sender->username,
                         'email' => $event->sender->email,
                         'password' => $event->sender->newPassword,
                     ];
-                    
+
                     $this->signup(client: $client, user: $craftUser);
 
-                    // redirect if set  
+                    // redirect if set
                     if ($redirect) {
                         Craft::$app->getResponse()->redirect(UrlHelper::url($redirect))->send();
                     }
@@ -192,11 +192,11 @@ class FlarumSso extends Plugin
         Event::on(
             \craft\web\User::class,
             WebUser::EVENT_AFTER_LOGOUT,
-            function(UserEvent $event) use($client, $redirect) {
+            function (UserEvent $event) use ($client, $redirect) {
                 // Log the user out
                 $this->logout(client: $client);
 
-                // redirect if set  
+                // redirect if set
                 if ($redirect) {
                     Craft::$app->getResponse()->redirect(UrlHelper::url($redirect))->send();
                 }
@@ -206,10 +206,10 @@ class FlarumSso extends Plugin
 
     /**
      * Change the users password in Flarum to reflect their Craft CMS Password
-     * 
+     *
      * @param   \burnthebook\craftflarumsso\services\FlarumApiClient $client An instance of the Flarum API Client
      * @param   array $user The Craft CMS User Data
-     * 
+     *
      * @return void
      */
     protected function changePassword(FlarumApiClient $client, array $user)
@@ -219,52 +219,52 @@ class FlarumSso extends Plugin
 
     /**
      * Log the user into Flarum with their Craft Credentials
-     * 
+     *
      * @param   \burnthebook\craftflarumsso\services\FlarumApiClient $client An instance of the Flarum API Client
      * @param   array $user The Craft CMS User Data
-     * 
+     *
      * @return void
      */
-    protected function login(FlarumApiClient $client, array $user) : void
+    protected function login(FlarumApiClient $client, array $user): void
     {
         try {
             // Get token
             $token = $client->getToken(
-                username: $user['username'], 
+                username: $user['username'],
                 password: $user['password']
             );
-    
+
             // getToken returns an array if error.
             if ($token['error']) {
-                throw new \Exception('Authentication failed: '. $token['data']);
+                throw new \Exception('Authentication failed: ' . $token['data']);
             }
-    
+
             // Set session cookie
             $client->setCookie(
-                name: 'token', 
+                name: 'token',
                 payload: $token['data']->token,
                 longLived: true
             );
-    
+
             // Set remember cookie
             $client->setCookie(
-                name: 'remember', 
-                payload: $token['data']->token, 
+                name: 'remember',
+                payload: $token['data']->token,
                 longLived: true
             );
-        } catch(\Exception $e) {
-            Craft::getLogger()->log("Flarum Authentication Failed.". " \r\nException: " . $e->getMessage() . " \r\n This is likely because the passwords in Flarum and Craft do not match.", Logger::LEVEL_INFO, 'flarum-sso');
+        } catch (\Exception $e) {
+            Craft::getLogger()->log("Flarum Authentication Failed." . " \r\nException: " . $e->getMessage() . " \r\n This is likely because the passwords in Flarum and Craft do not match.", Logger::LEVEL_INFO, 'flarum-sso');
         }
     }
 
     /**
      * Log the user out
-     * 
+     *
      * @param   \burnthebook\craftflarumsso\services\FlarumApiClient $client An instance of the Flarum API Client
-     * 
+     *
      * @return  void
      */
-    protected function logout(FlarumApiClient $client) : void
+    protected function logout(FlarumApiClient $client): void
     {
         $client->deleteCookie('token');
         $client->deleteCookie('remember');
@@ -272,13 +272,13 @@ class FlarumSso extends Plugin
 
     /**
      * Sign the user up to Flarum with their Craft Credentials
-     * 
+     *
      * @param   \burnthebook\craftflarumsso\services\FlarumApiClient $client An instance of the Flarum API Client
      * @param   array $user The Craft CMS User Data
-     * 
+     *
      * @return void
      */
-    protected function signup(FlarumApiClient $client, array $user) : void
+    protected function signup(FlarumApiClient $client, array $user): void
     {
         // Create account
         $client->createAccount(userDetails: $user);
