@@ -111,6 +111,66 @@ class FlarumSso extends Plugin
         // Get redirect URL
         $redirect = Craft::$app->request->getParam('redirect');
 
+        // Does not work, fires on login, not on already-authed.
+        // Event::on(
+        //     \yii\web\User::class,
+        //     \yii\web\User::EVENT_BEFORE_LOGIN,
+        //     function(Event $event) {
+        //         // Extract event data
+        //         $user = $event->identity ?? null;  // User identity
+        //         $cookieBased = $event->cookieBased ?? null;  // Is login via cookie?
+        //         $duration = $event->duration ?? null;  // Session duration
+        
+        //         // Debugging output
+        //         \Craft::info('Before login event triggered.', __METHOD__);
+        //         $debugData = [
+        //             'user' => $user,
+        //             'cookieBased' => $cookieBased,
+        //             'duration' => $duration
+        //         ];
+        //         \Craft::info('Data:' . print_r(json_encode($debugData)), __METHOD__);
+        //     }
+        // );
+
+        // Works but seems ham fisted.
+        Event::on(
+            \craft\web\Application::class,
+            \craft\web\Application::EVENT_BEFORE_REQUEST,
+            function (Event $event) use($client, $redirect) {
+                $user = Craft::$app->getUser();
+                if ($user->getIsGuest()) {
+                    return; // Not logged in
+                }
+        
+                $request = Craft::$app->getRequest();
+                if ($request->getPathInfo() === 'login') {
+                    // User is logged in and hitting /login
+                    \Craft::info('User already authed but has hit /login. Re-authenticating user externally.', __METHOD__);
+
+                    // Extract user data
+                    $user = $user->getIdentity();
+                    $craftUser = [
+                        'username' => $user->username,
+                        'email' => $user->email,
+                        'password' => 'password',
+                    ];
+
+                    // Check if user exists on Flarum
+                    if ($client->checkUserExists(username: $craftUser['username'])) {
+                        $this->login(client: $client, user: $craftUser);
+                    } else {
+                        // otherwise sign them up
+                        $this->signup(client: $client, user: $craftUser);
+                    }
+
+                    // redirect if set
+                    if ($redirect) {
+                        Craft::$app->getResponse()->redirect(UrlHelper::url($redirect))->send();
+                    }
+                }
+            }
+        );
+
         /**
          * On login, log user into flarum too
          */
